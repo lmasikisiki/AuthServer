@@ -1,0 +1,33 @@
+
+#Users
+dn: ou=groups,dc=ldapauth,dc=com
+objectClass: top
+objectClass: organizationalUnit
+ou: groups
+
+dn: ou=people,dc=ldapauth,dc=com
+objectClass: top
+objectClass: organizationalUnit
+ou: people
+
+dn: uid=lizom,ou=people,dc=ldapauth,dc=com
+objectClass: top
+objectClass: person
+objectClass: organizationalPerson
+ObjectClass: inetOrgPerson
+cn: Lizo Masikisiki
+sn: Masikisiki
+uid: lizom
+userPassword: password
+
+dn: cn=admin,ou=groups,dc=ldapauth,dc=com
+objectClass: top
+objectClass:groupOfNames
+cd: admin
+member: uid=lizom,ou=people,dc=ldapauth,dc=com
+
+dn: cn=user,ou=groups,dc=ldapauth,dc=com
+objectClass: top
+objectClass:groupOfNames
+cd: admin
+member: uid=lizom,ou=people,dc=ldapauth,dc=com

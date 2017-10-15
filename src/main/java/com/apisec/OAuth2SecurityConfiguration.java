@@ -28,9 +28,19 @@ public class OAuth2SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
 	@Autowired
 	public void globalUserDetails(final AuthenticationManagerBuilder auth) throws Exception {
-		auth.inMemoryAuthentication().withUser("user").password("password").roles("USER").and().withUser("admin")
-				.password("password").roles("ADMIN").and().withUser("user1").password("pass").roles("USER");
+		// auth.inMemoryAuthentication().withUser("user").password("password").roles("USER").and().withUser("admin")
+		// .password("password").roles("ADMIN").and().withUser("user1").password("pass").roles("USER");
 
+	auth
+	.ldapAuthentication()
+		.userSearchBase("ou=people")
+		.userSearchFilter("uid={0}")
+		.groupSearchBase("ou=groups")
+		.groupRoleAttribute("cn")
+		.groupSearchFilter("member={0}")
+		.contextSource()
+		.root("dc=ldapauth,dc=com")
+		.ldif("classpath:users.ldif");
 	}
 
 	@Override
