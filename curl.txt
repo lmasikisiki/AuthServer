@@ -1,1 +1,8 @@
-curl -X POST --user client:secret -d grant_type=password&username=user&password=password http://localhost:9001/oauth/token
+
+
+curl -X POST --user client:secret -d 'grant_type=password&username=admin&password=password' http://localhost:9001/oauth/token
+
+curl -X POST http://localhost:9001/oauth/check_token -vu client:secret -d "token=c72e8414-d82b-4052-81f1-90565ff0942c"
+
+
+curl -i -H "Accept: application/json" -H "Authorization: Bearer 1ec2e21f-9332-4bbc-9e8a-9412ddd81b38" -X GET http://localhost:8080/api/user
