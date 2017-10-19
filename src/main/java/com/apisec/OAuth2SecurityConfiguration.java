@@ -10,6 +10,7 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.oauth2.provider.ClientDetailsService;
 import org.springframework.security.oauth2.provider.approval.ApprovalStore;
 import org.springframework.security.oauth2.provider.approval.TokenApprovalStore;
@@ -19,35 +20,48 @@ import org.springframework.security.oauth2.provider.token.DefaultTokenServices;
 import org.springframework.security.oauth2.provider.token.TokenStore;
 import org.springframework.security.oauth2.provider.token.store.InMemoryTokenStore;
 
+import com.apisec.userdetail.CustomUserDetailsService;
+
 @Configuration
 @EnableWebSecurity
 public class OAuth2SecurityConfiguration extends WebSecurityConfigurerAdapter {
-
 	@Autowired
 	private ClientDetailsService clientDetailsService;
+	@Autowired
+	private CustomUserDetailsService customUserDetailsService;
 
 	@Autowired
 	public void globalUserDetails(final AuthenticationManagerBuilder auth) throws Exception {
-		// auth.inMemoryAuthentication().withUser("user").password("password").roles("USER").and().withUser("admin")
-		// .password("password").roles("ADMIN").and().withUser("user1").password("pass").roles("USER");
+		auth.userDetailsService(customUserDetailsService).passwordEncoder(passwordEncoder());
+	//@formatter:off
+//	.ldapAuthentication()
+//		.userSearchBase("ou=people")
+//		.userSearchFilter("uid={0}")
+//		.groupSearchBase("ou=groups")
+//		.groupRoleAttribute("cn")
+//		.groupSearchFilter("member={0}")
+//		.contextSource()
+//		.root("dc=ldapauth,dc=com")
+//		.ldif("classpath:users.ldif");//@formatter:on
+	}
 
-	auth
-	.ldapAuthentication()
-		.userSearchBase("ou=people")
-		.userSearchFilter("uid={0}")
-		.groupSearchBase("ou=groups")
-		.groupRoleAttribute("cn")
-		.groupSearchFilter("member={0}")
-		.contextSource()
-		.root("dc=ldapauth,dc=com")
-		.ldif("classpath:users.ldif");
+	@Bean
+	@Primary
+	public BCryptPasswordEncoder passwordEncoder() {
+		return new BCryptPasswordEncoder();
 	}
 
 	@Override
 	protected void configure(final HttpSecurity http) throws Exception {
-		http.authorizeRequests().antMatchers("/login").permitAll().antMatchers("/oauth/token/revokeById/**").permitAll()
-				.antMatchers("/tokens/**").permitAll().antMatchers("/oauth/check_token").permitAll().anyRequest()
-				.authenticated().and().formLogin().permitAll().and().csrf().disable();
+		//@formatter:off
+		http.authorizeRequests().antMatchers("/login").permitAll()
+		.antMatchers("/oauth/token/revokeById/**").permitAll()
+		.antMatchers("/tokens/**").permitAll()
+		.antMatchers("/api/user/**").permitAll()
+		.antMatchers("/oauth/check_token").permitAll()
+		.anyRequest().authenticated()
+		.and().formLogin().permitAll()
+		.and().csrf().disable(); //@formatter:on
 	}
 
 	@Override

@@ -1,0 +1,2 @@
+user:username:lele user:password:password user:isEnabled:true roles:[USER ADMIN]
+{"user":{"username":"lele","password":"password","isEnabled":true},"roles":["USER","ADMIN"]}
