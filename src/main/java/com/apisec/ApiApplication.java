@@ -13,27 +13,14 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
 @SpringBootApplication
-@ComponentScan({ "com.apisec", "com.apisec.controllers" })
+@ComponentScan({ "com.apisec.tests", "com.apisec.tests.controllers" })
 public class ApiApplication {
 
 	public static void main(String[] args) {
-		Gson g = new Gson();
-		JsonObject o = new JsonObject();
-		User u = new User();
-		u.setIsEnabled(true);
-		u.setPassword("password");
-		u.setUsername("lele");
-		JsonArray arr = new JsonArray();
-		o.add("user", g.toJsonTree(u));
-		arr.add("USER");
-		arr.add("ADMIN");
-		o.add("roles", arr);
-
-		System.out.print(o.toString());
 		SpringApplication.run(ApiApplication.class, args);
 	}
 
-	public void test(){
+	public void test() {
 		System.out.println();
 	}
 

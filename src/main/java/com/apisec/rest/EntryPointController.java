@@ -1,4 +1,4 @@
-package com.apisec.api;
+package com.apisec.rest;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -42,10 +42,10 @@ public class EntryPointController {
 			user = getUser(jsonObject);
 			Set<String> roleNames = this.getRoles(jsonObject);
 			Set<Role> roles = loadRoles(roleNames);
-			//user.setRoles(roles);
-			//user = userDetailsService.save(user);
+			user.setRoles(roles);
+			user = userDetailsService.save(user);
 		} catch (Exception e) {
-			System.out.println("Could not save the user \n"+e.getMessage()+" \n"+userData);
+			System.out.println("Could not save the user \n" + e.getMessage() + " \n" + userData);
 			user = null;
 		}
 		return user;
@@ -60,13 +60,12 @@ public class EntryPointController {
 		Set<String> roles = new HashSet<String>();
 		if (!hasProperty(jsonObject, "roles"))
 			return null;
-		if (jsonObject.isJsonArray()) {
-			jsonObject.getAsJsonArray().forEach(e -> {
+		if (jsonObject.get("roles").isJsonArray()) {
+			jsonObject.get("roles").getAsJsonArray().forEach(e -> {
 				roles.add(e.getAsString());
-				System.out.println(e.toString());
 			});
 		} else {
-			roles.add(jsonObject.getAsString());
+			roles.add(jsonObject.get("roles").getAsString());
 		}
 		return roles;
 	}
@@ -74,7 +73,7 @@ public class EntryPointController {
 	private User getUser(JsonObject jsonObject) {
 		if (!hasProperty(jsonObject, "user"))
 			return null;
-		return this.gson.fromJson(jsonObject, User.class);
+		return this.gson.fromJson(jsonObject.get("user"), User.class);
 	}
 
 	private boolean hasProperty(JsonObject jsonObject, String member) {
@@ -82,4 +81,5 @@ public class EntryPointController {
 			return false;
 		return jsonObject.has(member);
 	}
+
 }
