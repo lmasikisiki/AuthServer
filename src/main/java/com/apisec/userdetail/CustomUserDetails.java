@@ -29,6 +29,7 @@ public class CustomUserDetails implements UserDetails {
 		for (Role role : this.user.getRoles()) {
 			grantedAuthorities.add(new SimpleGrantedAuthority(role.getName()));
 		}
+		System.out.println(grantedAuthorities.toString());
 		return grantedAuthorities;
 	}
 

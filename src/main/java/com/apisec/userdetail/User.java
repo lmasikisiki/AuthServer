@@ -14,6 +14,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @Entity(name = "userDetail")
 
 public class User implements Serializable {
@@ -25,14 +27,14 @@ public class User implements Serializable {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
-	@Column(unique=true)
+	@Column(unique = true)
 	private String username;
 	private String password;
 	private Boolean isEnabled;
-
-	@ManyToMany(fetch= FetchType.EAGER)
-	@JoinTable(name = "user_roles",  joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"), inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id"))
-	private Set<Role> roles;
+	@JsonIgnore
+	@ManyToMany(fetch = FetchType.EAGER)
+	@JoinTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"), inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id"))
+	private Collection<Role> roles;
 
 	public Collection<Role> getRoles() {
 		return roles;
@@ -76,8 +78,8 @@ public class User implements Serializable {
 
 	@Override
 	public String toString() {
-		return "User [id=" + id + ", username=" + username + ", password=" + password + ", isEnabled="
-				+ isEnabled + ", roles=" + roles + "]";
+		return "User [id=" + id + ", username=" + username + ", password=" + password + ", isEnabled=" + isEnabled
+				+ ", roles=" + roles + "]";
 	}
 
 }

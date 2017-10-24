@@ -57,8 +57,8 @@ public class OAuth2SecurityConfiguration extends WebSecurityConfigurerAdapter {
 		http.authorizeRequests().antMatchers("/login").permitAll()
 		.antMatchers("/oauth/token/revokeById/**").permitAll()
 		.antMatchers("/tokens/**").permitAll()
-		.antMatchers("/api/user/**").permitAll()
 		.antMatchers("/oauth/check_token").permitAll()
+		.antMatchers("/api/**").permitAll()
 		.anyRequest().authenticated()
 		.and().formLogin().permitAll()
 		.and().csrf().disable(); //@formatter:on

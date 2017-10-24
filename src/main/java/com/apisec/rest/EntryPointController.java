@@ -1,13 +1,27 @@
 package com.apisec.rest;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import javax.ws.rs.Consumes;
+import javax.ws.rs.Produces;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Primary;
 import org.springframework.data.jpa.repository.query.Procedure;
+import org.springframework.http.HttpMethod;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.oauth2.config.annotation.web.configuration.EnableResourceServer;
+import org.springframework.security.oauth2.config.annotation.web.configuration.ResourceServerConfigurerAdapter;
+import org.springframework.security.oauth2.config.annotation.web.configurers.ResourceServerSecurityConfigurer;
+import org.springframework.security.oauth2.provider.token.RemoteTokenServices;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -16,34 +30,39 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.apisec.userdetail.Role;
 import com.apisec.userdetail.User;
-import com.apisec.userdetail.UserDetailsDetailsRepository;
-import com.apisec.userdetail.UserRoleRepository;
+import com.apisec.userdetail.UserService;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-
+@CrossOrigin(origins="*")
 @RestController
 @RequestMapping("/api")
+@EnableResourceServer
+@EnableGlobalMethodSecurity(prePostEnabled = true)
 public class EntryPointController {
 	@Autowired
-	private UserDetailsDetailsRepository userDetailsService;
+	private UserService userService;
 	@Autowired
-	private UserRoleRepository userRoleRepository;
+	private BCryptPasswordEncoder passwordEncoder;
 	private JsonParser jsonParser = new JsonParser();
 	private Gson gson = new Gson();
 
+	// #################### ADD USERS ###########################
 	@PostMapping("/user/add")
-	@Procedure("application/json")
+	@Produces("application/json")
 	@Consumes("application/json")
 	public @ResponseBody User addUser(@RequestBody String userData) {
 		User user = null;
+		System.out.println("Request recieved :" + userData);
 		try {
 			JsonObject jsonObject = (JsonObject) jsonParser.parse(userData);
 			user = getUser(jsonObject);
+			user.setPassword(passwordEncoder.encode(user.getPassword()));
+			user.setIsEnabled(true);
 			Set<String> roleNames = this.getRoles(jsonObject);
-			Set<Role> roles = loadRoles(roleNames);
+			Set<Role> roles = userService.loadRoles(roleNames);
 			user.setRoles(roles);
-			user = userDetailsService.save(user);
+			user = userService.saveUser(user);
 		} catch (Exception e) {
 			System.out.println("Could not save the user \n" + e.getMessage() + " \n" + userData);
 			user = null;
@@ -51,11 +70,57 @@ public class EntryPointController {
 		return user;
 	}
 
-	private Set<Role> loadRoles(Set<String> roles) {
-		return userRoleRepository.findAll().stream().filter(e -> roles.contains(e.getName()))
-				.collect(Collectors.toSet());
+	// ################### GET EXISTING USERS #####################
+	@GetMapping("/user/all")
+	@Produces("application/json")
+	@Consumes("application/json")
+	public List<String> getUsers() {
+		return userService.getUsers();
 	}
 
+	// ################### CHANGE USER PASSWORD ##################
+	@PostMapping("/user/changepassword")
+	@Produces("application/json")
+	@Consumes("application/json")
+	public @ResponseBody boolean changeUserPassword(@RequestBody String userPassowrdInfo) {
+		boolean passwordChanged = false;
+		try {
+			JsonObject jsonObject = (JsonObject) jsonParser.parse(userPassowrdInfo);
+			if (!jsonObject.isJsonNull() && !jsonObject.isJsonArray()) {
+				if (this.hasProperty(jsonObject, "username") && this.hasProperty(jsonObject, "password")) {
+					String username = jsonObject.get("username").getAsString();
+					String password = jsonObject.get("password").getAsString();
+					password = passwordEncoder.encode(password);
+					passwordChanged = userService.changeUserPassword(username, password);
+				} else
+					System.out.println("not enought informtion provided");
+			} else
+				System.out.println("could read request data");
+		} catch (Exception e) {
+			System.out.println("Could not change user password \n" + e.getMessage());
+		}
+		return passwordChanged;
+	}
+
+	// ################### ADD MORE ROLES ########################
+
+	@PostMapping("/role/add")
+	@Produces("application/json")
+	@Consumes("application/json")
+	public @ResponseBody Role addRole(@RequestBody String roleData) {
+		Role role = null;
+		try {
+			role = gson.fromJson(roleData, Role.class);
+			role.setUsers(null);
+			role = userService.saveRole(role);
+		} catch (Exception e) {
+			System.out.println("Could not save the role \n" + e.getMessage());
+			role = null;
+		}
+		return role;
+	}
+
+	// #################### PRIVATE METHODS ###########################
 	private Set<String> getRoles(JsonObject jsonObject) {
 		Set<String> roles = new HashSet<String>();
 		if (!hasProperty(jsonObject, "roles"))

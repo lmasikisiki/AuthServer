@@ -13,7 +13,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
 @SpringBootApplication
-@ComponentScan({ "com.apisec.tests", "com.apisec.tests.controllers" })
+@ComponentScan({ "com.apisec", "com.apisec.tests.controllers" })
 public class ApiApplication {
 
 	public static void main(String[] args) {
