@@ -1,20 +1,15 @@
 server:
   port: 9001
 
-spring: 
-  datasource: 
-    url: ${JDBC_DATABASE_URL} 
-#jdbc:postgresql://localhost:5432/dbtest 
-    driverClassName: org.postgresql.Driver
-    username: ${JDBC_DATABASE_USERNAME} 
-#dbuser
+spring:
+  datasource:
+    url: ${JDBC_DATABASE_URL}
+    username: ${JDBC_DATABASE_USERNAME}
     password: ${JDBC_DATABASE_PASSWORD}
+#jdbc:postgresql://localhost:5432/dbtest 
+#dbuser
 #lizo90
   jpa: 
     hibernate: 
       ddl-auto: create 
- 
-# ${JDBC_DATABASE_URL} 
-# ${JDBC_DATABASE_USERNAME}
-# ${JDBC_DATABASE_PASSWORD
   
