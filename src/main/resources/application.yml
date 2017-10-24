@@ -3,10 +3,13 @@ server:
 
 spring: 
   datasource: 
-    url: jdbc:postgresql://localhost:5432/dbtest 
+    url: ${JDBC_DATABASE_URL} 
+#jdbc:postgresql://localhost:5432/dbtest 
     driverClassName: org.postgresql.Driver
-    username: dbuser
-    password: lizo90
+    username: ${JDBC_DATABASE_USERNAME} 
+#dbuser
+    password: ${JDBC_DATABASE_PASSWORD}
+#lizo90
   jpa: 
     hibernate: 
       ddl-auto: update 
