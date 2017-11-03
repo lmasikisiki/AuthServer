@@ -1,6 +1,7 @@
 package com.apisec;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.security.oauth2.resource.ResourceServerProperties.Jwt;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -16,9 +17,12 @@ import org.springframework.security.oauth2.provider.approval.ApprovalStore;
 import org.springframework.security.oauth2.provider.approval.TokenApprovalStore;
 import org.springframework.security.oauth2.provider.approval.TokenStoreUserApprovalHandler;
 import org.springframework.security.oauth2.provider.request.DefaultOAuth2RequestFactory;
+import org.springframework.security.oauth2.provider.token.AccessTokenConverter;
 import org.springframework.security.oauth2.provider.token.DefaultTokenServices;
 import org.springframework.security.oauth2.provider.token.TokenStore;
 import org.springframework.security.oauth2.provider.token.store.InMemoryTokenStore;
+import org.springframework.security.oauth2.provider.token.store.JwtAccessTokenConverter;
+import org.springframework.security.oauth2.provider.token.store.JwtTokenStore;
 
 import com.apisec.userdetail.CustomUserDetailsService;
 
@@ -33,16 +37,16 @@ public class OAuth2SecurityConfiguration extends WebSecurityConfigurerAdapter {
 	@Autowired
 	public void globalUserDetails(final AuthenticationManagerBuilder auth) throws Exception {
 		auth.userDetailsService(customUserDetailsService).passwordEncoder(passwordEncoder());
-	//@formatter:off
-//	.ldapAuthentication()
-//		.userSearchBase("ou=people")
-//		.userSearchFilter("uid={0}")
-//		.groupSearchBase("ou=groups")
-//		.groupRoleAttribute("cn")
-//		.groupSearchFilter("member={0}")
-//		.contextSource()
-//		.root("dc=ldapauth,dc=com")
-//		.ldif("classpath:users.ldif");//@formatter:on
+		// @formatter:off
+		// .ldapAuthentication()
+		// .userSearchBase("ou=people")
+		// .userSearchFilter("uid={0}")
+		// .groupSearchBase("ou=groups")
+		// .groupRoleAttribute("cn")
+		// .groupSearchFilter("member={0}")
+		// .contextSource()
+		// .root("dc=ldapauth,dc=com")
+		// .ldif("classpath:users.ldif");//@formatter:on
 	}
 
 	@Bean
@@ -53,15 +57,11 @@ public class OAuth2SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
 	@Override
 	protected void configure(final HttpSecurity http) throws Exception {
-		//@formatter:off
-		http.authorizeRequests().antMatchers("/login").permitAll()
-		.antMatchers("/oauth/token/revokeById/**").permitAll()
-		.antMatchers("/tokens/**").permitAll()
-		.antMatchers("/oauth/check_token").permitAll()
-		.antMatchers("/api/**").permitAll()
-		.anyRequest().authenticated()
-		.and().formLogin().permitAll()
-		.and().csrf().disable(); //@formatter:on
+		// @formatter:off
+		http.authorizeRequests().antMatchers("/login").permitAll().antMatchers("/oauth/token/revokeById/**").permitAll()
+				.antMatchers("/tokens/**").permitAll().antMatchers("/oauth/check_token").permitAll()
+				.antMatchers("/api/**").permitAll().anyRequest().authenticated().and().formLogin().permitAll().and()
+				.csrf().disable(); // @formatter:on
 	}
 
 	@Override
@@ -72,7 +72,8 @@ public class OAuth2SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
 	@Bean
 	public TokenStore tokenStore() {
-		return new InMemoryTokenStore();
+		return new JwtTokenStore(accessTokenConverter());
+
 	}
 
 	@Bean
@@ -92,6 +93,14 @@ public class OAuth2SecurityConfiguration extends WebSecurityConfigurerAdapter {
 		handler.setRequestFactory(new DefaultOAuth2RequestFactory(clientDetailsService));
 		handler.setClientDetailsService(clientDetailsService);
 		return handler;
+	}
+
+	@Bean
+	@Primary
+	public JwtAccessTokenConverter accessTokenConverter() {
+		JwtAccessTokenConverter converter = new JwtAccessTokenConverter();
+		converter.setSigningKey("123");
+		return converter;
 	}
 
 	@Bean
