@@ -22,6 +22,7 @@ import org.springframework.security.oauth2.config.annotation.web.configurers.Res
 import org.springframework.security.oauth2.provider.token.RemoteTokenServices;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -34,7 +35,8 @@ import com.apisec.userdetail.UserService;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-@CrossOrigin(origins="*")
+
+@CrossOrigin(origins = "*")
 @RestController
 @RequestMapping("/api")
 @EnableResourceServer
@@ -70,7 +72,7 @@ public class EntryPointController {
 		return user;
 	}
 
-	// ################### GET EXISTING USERS #####################
+	// ################### GET EXISTING USERS - LIST #####################
 	@GetMapping("/user/all")
 	@Produces("application/json")
 	@Consumes("application/json")
@@ -78,6 +80,22 @@ public class EntryPointController {
 		return userService.getUsers();
 	}
 
+	// ################### GET EXISTING USER #####################
+	@GetMapping("/user/{username}")
+	@Produces("application/json")
+	@Consumes("application/json")
+	public User getUser(@PathVariable(name = "username") String username) {
+		return userService.getUser(username);
+	}
+
+	// ################### GET EXISTING USER #####################
+	@GetMapping("/roles/{username}")
+	@Produces("application/json")
+	@Consumes("application/json")
+	public List<Role> getUserRoles(@PathVariable(name = "username") String username) {
+		return userService.getUserRoles(username);
+	}
+	
 	// ################### CHANGE USER PASSWORD ##################
 	@PostMapping("/user/changepassword")
 	@Produces("application/json")

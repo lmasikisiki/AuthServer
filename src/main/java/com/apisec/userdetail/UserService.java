@@ -54,4 +54,12 @@ public class UserService {
 				.collect(Collectors.toList());
 		//@formatter:on	 	
 	}
+
+	public List<Role> getUserRoles(String username) {
+		return userRoleRepository.findByRoleName(username);
+	}
+
+	public User getUser(String username) {
+		return userDetailsService.findUserByUsername(username);
+	}
 }
