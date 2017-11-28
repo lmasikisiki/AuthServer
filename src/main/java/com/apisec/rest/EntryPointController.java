@@ -81,21 +81,21 @@ public class EntryPointController {
 	}
 
 	// ################### GET EXISTING USER #####################
-	@GetMapping("/user/{username}")
+	@PostMapping("/user/")
 	@Produces("application/json")
 	@Consumes("application/json")
-	public User getUser(@PathVariable(name = "username") String username) {
+	public User getUser(@RequestBody String username) {
 		return userService.getUser(username);
 	}
 
 	// ################### GET EXISTING USER #####################
-	@GetMapping("/roles/{username}")
+	@PostMapping("/roles/")
 	@Produces("application/json")
 	@Consumes("application/json")
-	public List<Role> getUserRoles(@PathVariable(name = "username") String username) {
+	public List<Role> getUserRoles(@RequestBody String username) {
 		return userService.getUserRoles(username);
 	}
-	
+
 	// ################### CHANGE USER PASSWORD ##################
 	@PostMapping("/user/changepassword")
 	@Produces("application/json")
