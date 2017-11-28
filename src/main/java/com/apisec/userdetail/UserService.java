@@ -19,6 +19,10 @@ public class UserService {
 	@Autowired
 	private UserRoleRepository userRoleRepository;
 
+	public User findUserByUsername(String username) {
+		return userDetailsService.findUserByUsername(username);
+	}
+
 	public Set<Role> loadRoles(Set<String> roleNames) {
 		Set<Role> fullRoles = new HashSet<>();
 		for (String roleName : roleNames) {
