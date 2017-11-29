@@ -96,6 +96,14 @@ public class EntryPointController {
 		return userService.getUserRoles(username);
 	}
 
+	// ################### GET Roles #####################
+	@GetMapping("/roles/all")
+	@Produces("application/json")
+	@Consumes("application/json")
+	public List<Role> getAllRoles() {
+		return userService.getAllRoles();
+	}
+
 	// ################### CHANGE USER PASSWORD ##################
 	@PostMapping("/user/changepassword")
 	@Produces("application/json")

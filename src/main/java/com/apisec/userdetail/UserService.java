@@ -63,6 +63,10 @@ public class UserService {
 		return userRoleRepository.findByRoleName(username);
 	}
 
+	public List<Role> getAllRoles() {
+		return userRoleRepository.findAll();
+	}
+
 	public User getUser(String username) {
 		return userDetailsService.findUserByUsername(username);
 	}
