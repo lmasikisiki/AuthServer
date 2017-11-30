@@ -72,6 +72,18 @@ public class EntryPointController {
 		return user;
 	}
 
+	// #################### ADD roles ###########################
+	@PostMapping("/role/add")
+	@Produces("application/json")
+	@Consumes("application/json")
+	public @ResponseBody Role addRole() {
+		Role role = new Role();
+		role.setName("ADMIN");
+		role.setUsers(null);
+		userService.saveRole(role);
+		return role;
+	}
+
 	// ################### GET EXISTING USERS - LIST #####################
 	@GetMapping("/user/all")
 	@Produces("application/json")
