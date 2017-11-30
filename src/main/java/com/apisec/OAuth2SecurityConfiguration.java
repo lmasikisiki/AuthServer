@@ -1,7 +1,6 @@
 package com.apisec;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.security.oauth2.resource.ResourceServerProperties.Jwt;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -11,59 +10,34 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.oauth2.provider.ClientDetailsService;
 import org.springframework.security.oauth2.provider.approval.ApprovalStore;
 import org.springframework.security.oauth2.provider.approval.TokenApprovalStore;
 import org.springframework.security.oauth2.provider.approval.TokenStoreUserApprovalHandler;
 import org.springframework.security.oauth2.provider.request.DefaultOAuth2RequestFactory;
-import org.springframework.security.oauth2.provider.token.AccessTokenConverter;
 import org.springframework.security.oauth2.provider.token.DefaultTokenServices;
 import org.springframework.security.oauth2.provider.token.TokenStore;
 import org.springframework.security.oauth2.provider.token.store.InMemoryTokenStore;
-import org.springframework.security.oauth2.provider.token.store.JwtAccessTokenConverter;
-import org.springframework.security.oauth2.provider.token.store.JwtTokenStore;
-
-import com.apisec.userdetail.CustomUserDetailsService;
 
 @Configuration
 @EnableWebSecurity
 public class OAuth2SecurityConfiguration extends WebSecurityConfigurerAdapter {
+
 	@Autowired
 	private ClientDetailsService clientDetailsService;
-	@Autowired
-	private CustomUserDetailsService customUserDetailsService;
 
-	
-	
 	@Autowired
 	public void globalUserDetails(final AuthenticationManagerBuilder auth) throws Exception {
-		auth.userDetailsService(customUserDetailsService).passwordEncoder(passwordEncoder());
-		// @formatter:off
-		// .ldapAuthentication()
-		// .userSearchBase("ou=people")
-		// .userSearchFilter("uid={0}")
-		// .groupSearchBase("ou=groups")
-		// .groupRoleAttribute("cn")
-		// .groupSearchFilter("member={0}")
-		// .contextSource()
-		// .root("dc=ldapauth,dc=com")
-		// .ldif("classpath:users.ldif");//@formatter:on
-	}
+		auth.inMemoryAuthentication().withUser("user").password("password").roles("USER").and().withUser("admin")
+				.password("password").roles("ADMIN").and().withUser("user1").password("pass").roles("USER");
 
-	@Bean
-	@Primary
-	public BCryptPasswordEncoder passwordEncoder() {
-		return new BCryptPasswordEncoder();
 	}
 
 	@Override
 	protected void configure(final HttpSecurity http) throws Exception {
-		// @formatter:off
 		http.authorizeRequests().antMatchers("/login").permitAll().antMatchers("/oauth/token/revokeById/**").permitAll()
-				.antMatchers("/tokens/**").permitAll().antMatchers("/oauth/check_token").permitAll()
-				.antMatchers("/api/**").permitAll().anyRequest().authenticated().and().formLogin().permitAll().and()
-				.csrf().disable(); // @formatter:on
+				.antMatchers("/tokens/**").permitAll().antMatchers("/oauth/check_token").permitAll().anyRequest()
+				.authenticated().and().formLogin().permitAll().and().csrf().disable();
 	}
 
 	@Override
@@ -74,8 +48,7 @@ public class OAuth2SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
 	@Bean
 	public TokenStore tokenStore() {
-		return new JwtTokenStore(accessTokenConverter());
-
+		return new InMemoryTokenStore();
 	}
 
 	@Bean
@@ -95,13 +68,6 @@ public class OAuth2SecurityConfiguration extends WebSecurityConfigurerAdapter {
 		handler.setRequestFactory(new DefaultOAuth2RequestFactory(clientDetailsService));
 		handler.setClientDetailsService(clientDetailsService);
 		return handler;
-	}
-
-	@Bean
-	public JwtAccessTokenConverter accessTokenConverter() {
-		JwtAccessTokenConverter converter = new JwtAccessTokenConverter();
-		converter.setSigningKey("123");
-		return converter;
 	}
 
 	@Bean
