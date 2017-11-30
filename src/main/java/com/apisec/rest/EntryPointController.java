@@ -73,7 +73,7 @@ public class EntryPointController {
 	}
 
 	// #################### ADD roles ###########################
-	@PostMapping("/role/add")
+	@PostMapping("/role/insert")
 	@Produces("application/json")
 	@Consumes("application/json")
 	public @ResponseBody Role addRole() {
