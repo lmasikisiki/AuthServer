@@ -20,28 +20,28 @@ import org.springframework.util.FileCopyUtils;
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 public class TestResourceServer extends ResourceServerConfigurerAdapter {
 
-	@Override
-	public void configure(ResourceServerSecurityConfigurer resources) throws Exception {
-		resources.tokenStore(tokenStore());
-	}
+// 	@Override
+// 	public void configure(ResourceServerSecurityConfigurer resources) throws Exception {
+// 		resources.tokenStore(tokenStore());
+// 	}
 
-	@Bean
-	public TokenStore tokenStore() {
-		return new JwtTokenStore(jwtAccessTokenConverter());
-	}
+// 	@Bean
+// 	public TokenStore tokenStore() {
+// 		return new JwtTokenStore(jwtAccessTokenConverter());
+// 	}
 
-	@Bean
-	public JwtAccessTokenConverter jwtAccessTokenConverter() {
-		JwtAccessTokenConverter covnerter = new JwtAccessTokenConverter();
-		Resource resource = new ClassPathResource("public.cert");
-		String pubKey = null;
-		try {
-			pubKey = new String(FileCopyUtils.copyToByteArray(resource.getInputStream()));
-		} catch (IOException e) {
-			throw new RuntimeException(e);
-		}
-		covnerter.setVerifierKey(pubKey);
-		return covnerter;
-	}
+// 	@Bean
+// 	public JwtAccessTokenConverter jwtAccessTokenConverter() {
+// 		JwtAccessTokenConverter covnerter = new JwtAccessTokenConverter();
+// 		Resource resource = new ClassPathResource("public.cert");
+// 		String pubKey = null;
+// 		try {
+// 			pubKey = new String(FileCopyUtils.copyToByteArray(resource.getInputStream()));
+// 		} catch (IOException e) {
+// 			throw new RuntimeException(e);
+// 		}
+// 		covnerter.setVerifierKey(pubKey);
+// 		return covnerter;
+// 	}
 
 }
