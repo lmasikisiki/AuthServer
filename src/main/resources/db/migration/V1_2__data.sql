@@ -15,6 +15,12 @@ SET row_security = off;
 
 SET search_path = public, pg_catalog;
 
+
+
+-- CLEAR ALL
+DELETE * FROM user_roles;
+DELETE * FROM role;
+DELETE * FROM user_detail;
 --
 -- Data for Name: role; Type: TABLE DATA; Schema: public; Owner: dbuser
 --
