@@ -8,27 +8,18 @@ import javax.ws.rs.Consumes;
 import javax.ws.rs.Produces;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Primary;
-import org.springframework.data.jpa.repository.query.Procedure;
-import org.springframework.http.HttpMethod;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
-import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableResourceServer;
-import org.springframework.security.oauth2.config.annotation.web.configuration.ResourceServerConfigurerAdapter;
-import org.springframework.security.oauth2.config.annotation.web.configurers.ResourceServerSecurityConfigurer;
-import org.springframework.security.oauth2.provider.token.RemoteTokenServices;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.apisec.MessageCollection;
 import com.apisec.userdetail.Role;
 import com.apisec.userdetail.User;
 import com.apisec.userdetail.UserService;
@@ -48,6 +39,29 @@ public class EntryPointController {
 	private BCryptPasswordEncoder passwordEncoder;
 	private JsonParser jsonParser = new JsonParser();
 	private Gson gson = new Gson();
+
+	@PostMapping("/user/addrole")
+	@Produces("application/json")
+	@Consumes("application/json")
+	public @ResponseBody MessageCollection assignRoleToUser(@RequestBody String data) {
+		MessageCollection messages = new MessageCollection();
+		try {
+			JsonObject jsonData = (JsonObject) jsonParser.parse(data);
+			if (!this.hasProperty(jsonData, "username") | !this.hasProperty(jsonData, "roleName")) {
+				throw new NullPointerException("Expected object to have both username and roleName but had one");
+			}
+
+			Role role = userService.assingRoleToUser(jsonData.get("username").getAsString(),
+					jsonData.get("roleName").getAsString());
+
+			messages.addData(role);
+			messages.isSuccess(true);
+		} catch (Exception e) {
+			messages.addMessages(e.getMessage());
+			messages.addMessages(e.getClass() + "");
+		}
+		return messages;
+	}
 
 	// #################### ADD USERS ###########################
 	@PostMapping("/user/add")
@@ -169,7 +183,7 @@ public class EntryPointController {
 
 	private boolean hasProperty(JsonObject jsonObject, String member) {
 		if (jsonObject.isJsonNull() || member.isEmpty())
-			return false;
+			throw new NullPointerException("Empty object was passed");
 		return jsonObject.has(member);
 	}
 
