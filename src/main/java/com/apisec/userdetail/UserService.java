@@ -3,9 +3,7 @@ package com.apisec.userdetail;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Observable;
 import java.util.Set;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -72,25 +70,24 @@ public class UserService {
 		return userDetailsService.findUserByUsername(username);
 	}
 
-	public Role assingRoleToUser(String username, String roleName) {
+	public User assingRoleToUser(String username, String roleName) {
 
 		User user = userDetailsService.findUserByUsername(username);
 		if (user == null)
 			throw new NullPointerException("No user found with that username :" + username);
 
-		List<Role> roles = userRoleRepository.findByRoleName(roleName);
-		if (roles == null | roles.isEmpty())
+		List<Role> matchingRoles = userRoleRepository.findByRoleName(roleName);
+		if (matchingRoles == null | matchingRoles.isEmpty())
 			throw new NullPointerException("No role found with that rolename :" + roleName);
 
-		Role role = roles.get(0);
-		Collection<User> users = role.getUsers();
-		System.out.println("Count existing matching users"+users.stream().filter(u -> u.getUsername().trim().equals(username.trim())).count());
-		if (users.stream().filter(u -> u.getUsername().trim().equals(username.trim())).count() > 0)
+		Set<Role> userCurrentRoles = user.getRoles();
+		if (userCurrentRoles.stream().filter(rol -> rol.getName().trim().equals(roleName.trim())).count() > 0)
 			throw new IllegalArgumentException(
-					String.format("User with username %s already has role: %s ", username, role.getName()));
+					String.format("User with username %s already has role: %s ", username, roleName));
 
-		users.add(user);
-		role.setUsers(users);
-		return userRoleRepository.save(role);
+		userCurrentRoles.add(matchingRoles.get(0));
+		user.setRoles(userCurrentRoles);
+		return userDetailsService.save(user);
+
 	}
 }

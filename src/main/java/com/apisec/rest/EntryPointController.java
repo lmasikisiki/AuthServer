@@ -51,10 +51,10 @@ public class EntryPointController {
 				throw new NullPointerException("Expected object to have both username and roleName but had one");
 			}
 
-			Role role = userService.assingRoleToUser(jsonData.get("username").getAsString(),
+			User  user= userService.assingRoleToUser(jsonData.get("username").getAsString(),
 					jsonData.get("roleName").getAsString());
 
-			messages.addData(role);
+			messages.addData(user);
 			messages.isSuccess(true);
 		} catch (Exception e) {
 			messages.addMessages(e.getMessage());
