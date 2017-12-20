@@ -91,6 +91,7 @@ public class UserService {
 
 		users.add(user);
 		role.setUsers(users);
+		role.setRoleId(0);
 		return userRoleRepository.save(role);
 	}
 }
