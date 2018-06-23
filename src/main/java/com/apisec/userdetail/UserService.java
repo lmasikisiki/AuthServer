@@ -1,18 +1,14 @@
 package com.apisec.userdetail;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Observable;
-import java.util.Set;
-import java.util.stream.Collector;
-import java.util.stream.Collectors;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
-@Transactional
 public class UserService {
 	@Autowired
 	private UserDetailsDetailsRepository userDetailsService;
@@ -20,13 +16,13 @@ public class UserService {
 	private UserRoleRepository userRoleRepository;
 
 	public User findUserByUsername(String username) {
-		return userDetailsService.findUserByUsername(username);
+		return userDetailsService.findByUsername(username);
 	}
 
 	public Set<Role> loadRoles(Set<String> roleNames) {
 		Set<Role> fullRoles = new HashSet<>();
 		for (String roleName : roleNames) {
-			List<Role> roles = userRoleRepository.findByRoleName(roleName);
+			List<Role> roles = userRoleRepository.findByName(roleName);
 			if (!roles.isEmpty()) {
 				Role role = roles.get(0);
 				if (!fullRoles.contains(role)) {
@@ -46,7 +42,8 @@ public class UserService {
 	}
 
 	public boolean changeUserPassword(String username, String password) {
-		return userDetailsService.changedUserPassword(username, password);
+		//return userDetailsService.changedUserPassword(username, password);
+		return false;
 	}
 
 	public List<String> getUsers() {
@@ -60,7 +57,7 @@ public class UserService {
 	}
 
 	public List<Role> getUserRoles(String username) {
-		return userRoleRepository.findByRoleName(username);
+		return userRoleRepository.findByName(username);
 	}
 
 	public List<Role> getAllRoles() {
@@ -68,6 +65,6 @@ public class UserService {
 	}
 
 	public User getUser(String username) {
-		return userDetailsService.findUserByUsername(username);
+		return userDetailsService.findByUsername(username);
 	}
 }

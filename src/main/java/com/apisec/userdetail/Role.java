@@ -1,54 +1,42 @@
 package com.apisec.userdetail;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import org.springframework.data.mongodb.core.mapping.Document;
+
 import java.io.Serializable;
 import java.util.Collection;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.ManyToMany;
-
-import com.fasterxml.jackson.annotation.JsonManagedReference;
-
-@Entity
+@Document
 public class Role implements Serializable {
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long id;
-	@ManyToMany(mappedBy = "roles")
-	@JsonManagedReference
-	private Collection<User> users;
-	@Column(unique = true)
-	private String name;
 
-	public Collection<User> getUsers() {
-		return users;
-	}
+    private static final long serialVersionUID = 1L;
 
-	public void setUsers(Collection<User> users) {
-		this.users = users;
-	}
+    private Long id;
+    private Collection<User> users;
+    private String name;
 
-	public Long getRoleId() {
-		return id;
-	}
+    public Collection<User> getUsers() {
+        return users;
+    }
 
-	public void setRoleId(Long roleId) {
-		this.id = roleId;
-	}
+    public void setUsers(Collection<User> users) {
+        this.users = users;
+    }
 
-	public String getName() {
-		return name;
-	}
+    public Long getRoleId() {
+        return id;
+    }
 
-	public void setName(String name) {
-		this.name = name;
-	}
+    public void setRoleId(Long roleId) {
+        this.id = roleId;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
 
 }
