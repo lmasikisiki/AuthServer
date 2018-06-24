@@ -7,9 +7,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.oauth2.config.annotation.web.configuration.EnableResourceServer;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import javax.ws.rs.Consumes;
@@ -17,17 +15,18 @@ import javax.ws.rs.Produces;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 
 @CrossOrigin(origins = "*")
 @RestController
 @RequestMapping("/api")
-@EnableResourceServer
-@EnableGlobalMethodSecurity(prePostEnabled = true)
+//@EnableResourceServer
+//@EnableGlobalMethodSecurity(prePostEnabled = true)
 public class HomeController {
 	@Autowired
 	private UserService userService;
 	@Autowired
-	private BCryptPasswordEncoder passwordEncoder;
+	private PasswordEncoder passwordEncoder;
 	private JsonParser jsonParser = new JsonParser();
 	private Gson gson = new Gson();
 
@@ -36,11 +35,12 @@ public class HomeController {
 	@Produces("application/json")
 	@Consumes("application/json")
 	public @ResponseBody User addUser(@RequestBody String userData) {
-		User user = null;
-		System.out.println("Request recieved :" + userData);
+		User user;
+ 		String user_id= UUID.randomUUID().toString();
 		try {
 			JsonObject jsonObject = (JsonObject) jsonParser.parse(userData);
 			user = getUser(jsonObject);
+			user.setUserId(user_id);
 			user.setPassword(passwordEncoder.encode(user.getPassword()));
 			user.setIsEnabled(true);
 			Set<String> roleNames = this.getRoles(jsonObject);

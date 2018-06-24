@@ -6,3 +6,6 @@ curl -X POST http://localhost:9001/oauth/check_token -vu client:secret -d "token
 
 
 curl -i -H "Accept: application/json" -H "Authorization: Bearer 1ec2e21f-9332-4bbc-9e8a-9412ddd81b38" -X GET http://localhost:8080/api/user
+
+
+curl -X POST -H 'Content-type:application/json' --data '{"user":{"username":"admin","password":"changeit","isEnabled":true},"roles":["USER","ADMIN"]}' http://localhost:9001/api/user/add

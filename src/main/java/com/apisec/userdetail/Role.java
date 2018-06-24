@@ -5,13 +5,14 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.io.Serializable;
 import java.util.Collection;
+import java.util.UUID;
 
 @Document
 public class Role implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    private Long id;
+    private String id= UUID.randomUUID().toString();
     private Collection<User> users;
     private String name;
 
@@ -23,11 +24,11 @@ public class Role implements Serializable {
         this.users = users;
     }
 
-    public Long getRoleId() {
+    public String getRoleId() {
         return id;
     }
 
-    public void setRoleId(Long roleId) {
+    public void setRoleId(String roleId) {
         this.id = roleId;
     }
 
@@ -38,5 +39,6 @@ public class Role implements Serializable {
     public void setName(String name) {
         this.name = name;
     }
+
 
 }

@@ -6,6 +6,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.Set;
+import java.util.UUID;
 
 @Document
 public class User implements Serializable {
@@ -15,7 +16,7 @@ public class User implements Serializable {
 	 */
 	private static final long serialVersionUID = 1L;
 
-	private Long id;
+	private String id= UUID.randomUUID().toString();
  	private String username;
 	private String password;
 	private Boolean isEnabled;
@@ -30,11 +31,11 @@ public class User implements Serializable {
 		this.roles = roles;
 	}
 
-	public Long getUserId() {
+	public String getUserId() {
 		return id;
 	}
 
-	public void setUserId(Long userId) {
+	public void setUserId(String userId) {
 		this.id = userId;
 	}
 

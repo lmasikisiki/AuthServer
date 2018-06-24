@@ -31,17 +31,16 @@ public class AuthorizationServerConfiguration extends AuthorizationServerConfigu
 
 	@Override
 	public void configure(ClientDetailsServiceConfigurer clients) throws Exception {
-
-		clients.inMemory().withClient("client")
+	    clients.inMemory().withClient("client")
 				.authorizedGrantTypes("password", "authorization_code", "refresh_token", "implicit")
-				.authorities("ROLE_CLIENT", "ROLE_TRUSTED_CLIENT").scopes("read", "write", "trust").secret("secret")
+				.authorities("ROLE_CLIENT", "ROLE_TRUSTED_CLIENT").scopes("read", "write", "trust").secret("{noop}secret")
 				.accessTokenValiditySeconds(5000).refreshTokenValiditySeconds(1800);
 	}
 
 	@Override
 	public void configure(AuthorizationServerEndpointsConfigurer authServer) throws Exception {
-
-		authServer.tokenStore(tokenStore).userApprovalHandler(userApprovalHandler)
+	    authServer.tokenStore(tokenStore)
+                .userApprovalHandler(userApprovalHandler)
 				.authenticationManager(authenticationManager);
 	}
 
