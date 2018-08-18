@@ -15,5 +15,5 @@ server:
 spring:
   data:
     mongodb:
-      uri: "mongodb://admin:lizo90@ds263710.mlab.com:63710/khweladb"
+      uri: "mongodb://admin:lizo90@ds223542.mlab.com:23542/khweladb"
   
